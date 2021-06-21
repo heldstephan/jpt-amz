@@ -376,6 +376,6 @@ void SymmetrizeCandidateSet(void);
 void TSPTW_Reduce(void);
 void TrimCandidateSet(int MaxCandidates);
 void UpdateStatistics(long long Cost, double Time);
-void WriteTour(char * FileName, int * Tour, long long Penalty, long long Cost);
+void WriteTour(char * FileName, int * Tour, long long Cost);
 
 #endif
