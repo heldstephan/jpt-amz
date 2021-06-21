@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         RecordBestTour();
         CurrentPenalty = LLONG_MAX;
         BestPenalty = CurrentPenalty = Penalty();
-        WriteTour(TourFileName, BestTour, BestPenalty, BestCost);
+        WriteTour(TourFileName, BestTour, BestCost);
         Runs = 0;
     }
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         SRandom(++Seed);
     }
     CurrentPenalty = BestPenalty;
-    WriteTour(TourFileName, BestTour, BestPenalty, BestCost);
+    WriteTour(TourFileName, BestTour, BestCost);
     if (TraceLevel >= 1)
         PrintStatistics();
     if (1) {
