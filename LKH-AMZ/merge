@@ -1,0 +1,42 @@
+#!/bin/bash
+# Usage: ./merge directory1 directory2 result_directory
+
+if [ -z "$3" ]; then
+    echo "./merge directory1 directory2 result_directory"
+    exit
+fi
+
+start=`date +%s`
+
+dir1=$1
+dir2=$2
+result=$3
+
+mkdir -p TOURS-$result
+mkdir -p $result
+
+for FILE in `ls $dir1/*.ctsptw` ;
+do
+    name=$(echo "$FILE" | cut -f 2 -d '/' | cut -f 1 -d '.')
+    ./get_Cost TOURS-$dir1/$name.tour
+    penalty1=$(cat Penalty)
+    length1=$(cat Length)
+    ./get_Cost TOURS-$dir2/$name.tour
+    penalty2=$(cat Penalty)
+    length2=$(cat Length)
+    length2=$(echo $length2*1.01|bc)
+    length2=${length2/.*}
+    echo $name: $penalty1"_"$length1 $penalty2"_"$length2
+    if [ $length1 -le $length2 ]; then
+        ln -fs ../$dir1/$name.ctsptw $result/$name.ctsptw
+        ln -fs ../TOURS-$dir1/$name.tour TOURS-$result/$name.tour
+    else
+        ln -fs ../$dir2/$name.ctsptw $result/$name.ctsptw
+        ln -fs ../TOURS-$dir2/$name.tour TOURS-$result/$name.tour
+    fi
+done
+
+./score $result
+
+end=`date +%s`
+echo "Runtime:" $((end-start)) "seconds"

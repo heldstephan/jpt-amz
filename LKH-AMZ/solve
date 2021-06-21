@@ -1,0 +1,41 @@
+#!/bin/bash
+# Usage: ./solve instances [ time_limit ]
+
+if [ -z "$1" ]; then
+    echo "./solve instances"
+    exit
+fi
+
+THREADS=16
+
+start=`date +%s`
+
+instances=$1
+if [ -z "$2" ]; then
+    time_limit=10
+else
+    time_limit=$2
+fi
+
+mkdir -p TOURS-$instances
+mkdir -p TMP
+
+for FILE in `ls $instances/*.ctsptw` ;
+do
+    name=$(echo "$FILE" | cut -f 2 -d '/' | cut -f 1 -d '.')
+    par=TMP/$name.pid$$.par
+    echo "PROBLEM_FILE = $FILE" > $par
+    echo "CTSP_TRANSFORM = YES" >> $par
+    echo "SEED = 1" >> $par
+    echo "TIME_LIMIT = $time_limit" >> $par
+    echo "TOUR_FILE = TOURS-$instances/$name.tour" >> $par
+    ./LKH $par &
+    until [ $(jobs -l | wc -l) -lt $THREADS ]; do
+        sleep 0.01
+    done
+done
+wait
+
+
+end=`date +%s`
+echo "Runtime:" $((end-start)) "seconds"
