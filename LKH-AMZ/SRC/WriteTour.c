@@ -11,15 +11,13 @@
  * Nothing happens if FileName is 0.
  */
 
-void WriteTour(char *FileName, int *Tour, long long Penalty, long long Cost)
+void WriteTour(char *FileName, int *Tour, long long Cost)
 {
     FILE *TourFile;
     int i, j, n;
     char *FullFileName;
     time_t Now;
 
-    if (CurrentPenalty != 0 && ProblemType != TSPTW)
-        return;
     if (FileName == 0)
         return;
     FullFileName = FullName(FileName, Cost);
@@ -29,16 +27,11 @@ void WriteTour(char *FileName, int *Tour, long long Penalty, long long Cost)
                 FileName == TourFileName ? " TOUR_FILE" : "",
                 FullFileName);
     TourFile = fopen(FullFileName, "w");
-    if (CurrentPenalty == 0) {
-        fprintf(TourFile, "NAME : %s.%lld.tour\n", Name, Cost);
-        fprintf(TourFile, "COMMENT : Length = %lld\n", Cost);
-    } else {
-        fprintf(TourFile, "NAME : %s.%lld_%lld.tour\n",
-                Name, BestPenalty, Cost);
-        fprintf(TourFile,
-                "COMMENT : Cost = %lld_%lld\n", CurrentPenalty, Cost);
-    }
-    fprintf(TourFile, "COMMENT : Found by LKH-3 [Keld Helsgaun] %s",
+    fprintf(TourFile, "NAME : %s.%lld_%lld.tour\n",
+            Name, BestPenalty, Cost);
+    fprintf(TourFile,
+            "COMMENT : Cost = %lld_%lld\n", CurrentPenalty, Cost);
+    fprintf(TourFile, "COMMENT : Found by LKH-AMZ [Keld Helsgaun] %s",
             ctime(&Now));
     fprintf(TourFile, "TYPE : TOUR\n");
     fprintf(TourFile, "DIMENSION : %d\n", DimensionSaved);
