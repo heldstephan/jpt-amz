@@ -45,6 +45,6 @@ $(ODIR):
 	mkdir $(ODIR)
 
 clean:
-	/bin/rm -f $(ODIR)/*.o ../LKH *~ ._* $(IDIR)/*~ $(IDIR)/._*
+	/bin/rm -f $(ODIR)/* ../LKH *~ ._* $(IDIR)/*~ $(IDIR)/._*
 	/bin/rmdir $(ODIR)
 
