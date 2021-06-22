@@ -29,8 +29,11 @@ _OBJ = Activate.o AddCandidate.o AddTourCandidates.o                   \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-$(ODIR)/%.o: %.c $(DEPS)
+
+$(ODIR)/%.o: %.c $(DEPS) $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+
 
 .PHONY: 
 	all clean
@@ -41,6 +44,11 @@ all:
 LKH: $(OBJ) $(DEPS)
 	$(CC) -o ../LKH $(OBJ) $(CFLAGS) -lm
 
+$(ODIR):
+	mkdir $(ODIR)
+
+
 clean:
-	/bin/rm -f $(ODIR)/*.o ../LKH *~ ._* $(IDIR)/*~ $(IDIR)/._* 
+	/bin/rm -f $(ODIR)/*.o ../LKH *~ ._* $(IDIR)/*~ $(IDIR)/._*
+	/bin/rmdir $(ODIR)
 
