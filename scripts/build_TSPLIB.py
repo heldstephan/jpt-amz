@@ -709,10 +709,13 @@ def run_build(args):
     else:
         sampleRoutes = []
 
+    stationStops = []
     if not args.noZone:  # build list of zone_id locations for each station
         stationStops = uz.getStationStopsLatLng(R,stationList)
 
     superSets = dict()
+    station_infos = dict()
+    clusterKeys = dict()
     if not args.noZonePred:  # build historic zone adj information
         print( "Extracting zone ordering ... ")
         if args.z_file:
@@ -727,8 +730,9 @@ def run_build(args):
                                             clusterKeys["cluster"])
 
 
-    print("clusterKeys", clusterKeys)
-    print( "Done zone ordering ... ")
+        print("clusterKeys", clusterKeys)
+        print( "Done zone ordering ... ")
+
 
 
 
