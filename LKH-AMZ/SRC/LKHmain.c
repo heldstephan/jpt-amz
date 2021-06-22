@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     for (Run = 1; Run <= Runs; Run++) {
         LastTime = GetTime();
-        if (LastTime - StartTime >= TimeLimit) {
+        if (Run > 1 && LastTime - StartTime >= TimeLimit) {
             if (TraceLevel >= 1)
                 printff("*** Time limit exceeded ***\n");
             break;
