@@ -8,13 +8,13 @@ _DEPS = Hashing.h Heap.h LKH.h Segment.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = Activate.o AddCandidate.o AddTourCandidates.o                   \
-	   AdjustCandidateSet.o AllocateStructures.o Ascent.o              \
+       AdjustCandidateSet.o AllocateStructures.o Ascent.o              \
        Between_SL.o CandidateReport.o                                  \
        C.o ChooseInitialTour.o Connect.o CreateCandidateSet.o          \
        Distance.o eprintf.o FindTour.o                                 \
-	   FixedCandidates.o Flip.o Flip_SL.o Forbidden.o                  \
+       FixedCandidates.o Flip.o Flip_SL.o Forbidden.o                  \
        fscanint.o GenerateCandidates.o GetTime.o                       \
-	   Hashing.o Heap.o Improvement.o IsCandidate.o                    \
+       Hashing.o Heap.o Improvement.o IsCandidate.o                    \
        IsPossibleCandidate.o KSwapKick.o LinKernighan.o                \
        LKHmain.o Make3OptMove.o                                        \
        Minimum1TreeCost.o MinimumSpanningTree.o                        \
@@ -25,7 +25,7 @@ _OBJ = Activate.o AddCandidate.o AddTourCandidates.o                   \
        RecordBetterTour.o RemoveFirstActive.o                          \
        ResetCandidateSet.o RestoreTour.o                               \
        SpecialMove.o StatusReport.o Statistics.o StoreTour.o           \
-	   SymmetrizeCandidateSet.o WriteTour.o
+       SymmetrizeCandidateSet.o WriteTour.o
 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
