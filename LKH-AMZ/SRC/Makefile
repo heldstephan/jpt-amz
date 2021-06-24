@@ -29,7 +29,7 @@ _OBJ = Activate.o AddCandidate.o AddTourCandidates.o                   \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-$(ODIR)/%.o: %.c $(DEPS) $(ODIR)
+$(ODIR)/%.o: %.c $(DEPS) | $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 .PHONY: 
