@@ -12,6 +12,7 @@ dir1=$1
 dir2=$2
 result=$3
 
+/bin/rm -fr TOURS-$result
 mkdir -p TOURS-$result
 mkdir -p $result
 
