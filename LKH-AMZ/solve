@@ -31,7 +31,7 @@ do
     echo "TIME_LIMIT = $time_limit" >> $par
     echo "TOUR_FILE = TOURS-$instances/$name.tour" >> $par
     ./LKH $par &
-    until [ $(jobs | wc -l) -lt $THREADS ]; do
+    until [ $(jobs | grep Running | wc -l) -lt $THREADS ]; do
         sleep 0.01
     done
 done
