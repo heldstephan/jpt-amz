@@ -17,6 +17,7 @@ else
     time_limit=$2
 fi
 
+/bin/rm -fr TOURS-$instances
 mkdir -p TOURS-$instances
 mkdir -p TMP
 
