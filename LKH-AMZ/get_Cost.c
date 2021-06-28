@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
     FILE *in, *out;
     char line[255];
     int penalty = 0, length;
-    long long sum;
 
     in = fopen(argv[1], "r");
     fgets(line, 255, in);
