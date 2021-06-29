@@ -37,6 +37,5 @@ do
 done
 wait
 
-
 end=`date +%s`
 echo "Runtime:" $((end-start)) "seconds"
