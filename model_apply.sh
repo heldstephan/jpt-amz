@@ -21,13 +21,13 @@ date
 
 
 echo "Creating TSPLIB1 instances to $DATA_DIR/model_apply_outputs/TSPLIB_1"
-cmd="${BASE_DIR}/scripts/build_TSPLIB.py --r_file $DATA_DIR/model_apply_inputs/new_route_data.json --t_file  $DATA_DIR/model_apply_inputs/new_travel_times.json --p_file $DATA_DIR/model_apply_inputs/new_package_data.json --z_file $DATA_DIR/model_build_outputs/model.json --br_file $DATA_DIR/model_build_outputs/route_data.json -noPrune  -noPruneFailed -zoneNeighborTrans -superNeighborTrans -disjunctiveZonePred  $DATA_DIR/model_apply_outputs/TSPLIB_1"
+cmd="${BASE_DIR}/scripts/build_TSPLIB.py --r_file $DATA_DIR/model_apply_inputs/new_route_data.json --t_file  $DATA_DIR/model_apply_inputs/new_travel_times.json --p_file $DATA_DIR/model_apply_inputs/new_package_data.json --z_file $DATA_DIR/model_build_outputs/model.json --br_file $DATA_DIR/model_build_outputs/route_data.json -noPrune  -noPruneFailed -zoneNeighborTrans -superNeighborTrans  $DATA_DIR/model_apply_outputs/TSPLIB_1"
 echo $cmd
 $cmd &
 
 
 echo "Creating TSPLIB2 instances to $DATA_DIR/model_apply_outputs/TSPLIB_2"
-cmd="${BASE_DIR}/scripts/build_TSPLIB.py --r_file $DATA_DIR/model_apply_inputs/new_route_data.json --t_file  $DATA_DIR/model_apply_inputs/new_travel_times.json --p_file $DATA_DIR/model_apply_inputs/new_package_data.json --z_file $DATA_DIR/model_build_outputs/model.json --br_file $DATA_DIR/model_build_outputs/route_data.json  -noPrune -noPruneFailed -zoneNeighborTrans -superNeighborTrans -disjunctiveZonePred  -superPred -trans   $DATA_DIR/model_apply_outputs/TSPLIB_2"
+cmd="${BASE_DIR}/scripts/build_TSPLIB.py --r_file $DATA_DIR/model_apply_inputs/new_route_data.json --t_file  $DATA_DIR/model_apply_inputs/new_travel_times.json --p_file $DATA_DIR/model_apply_inputs/new_package_data.json --z_file $DATA_DIR/model_build_outputs/model.json --br_file $DATA_DIR/model_build_outputs/route_data.json  -noPrune -noPruneFailed -zoneNeighborTrans -superNeighborTrans  -superPred -trans   $DATA_DIR/model_apply_outputs/TSPLIB_2"
 echo $cmd
 $cmd
 
