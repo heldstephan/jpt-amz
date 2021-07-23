@@ -11,8 +11,7 @@
  *
  * NextN is chosen as follows:
  *
- *  (A) If possible, choose NextN such that (N,NextN) is a fixed edge, or
- *      is common to two or more tours to be merged.
+ *  (A) If possible, choose NextN such that (N,NextN) is a fixed edge.
  *  (B) Otherwise, if possible, choose NextN so that (N,NextN) is a
  *      candidate edge, the alpha-value of (N,NextN) is zero, and (N,NextN)
  *      belongs to the current best or next best tour.
