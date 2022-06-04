@@ -47,7 +47,8 @@ for tdata in A:
   if len(route['stops']) != ncount:
     print("ERROR: Route file does not match the time file\n")
     sys.exit()
-  f.write('COMMENT: ' + route['route_score'] + '\n')
+  if 'route_score' in route:
+      f.write('COMMENT: ' + route['route_score'] + '\n')
 
   f.write('DIMENSION: ' + str(ncount) + '\n')
   f.write('TOUR_SECTION\n')
