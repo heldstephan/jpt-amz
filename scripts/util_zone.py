@@ -260,7 +260,8 @@ def getSuperSets(routes, sequences, stationList, stationStops, clusterKey):
     superSets = dict()
     for id in routes:
         routeData = routes[id]
-        if routeData['route_score'] == 'Low': continue
+        if 'route_score' in routeData and routeData['route_score'] == 'Low':
+            continue
         zoneList, zoneIndex = getRouteZones(routeData,
                 stationList.index(routeData['station_code']), stationStops)
         superList = []
