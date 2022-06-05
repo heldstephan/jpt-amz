@@ -743,7 +743,8 @@ def run_build(args):
     for id in R:
         if ((len(sampleRoutes) > 0 and (id not in sampleRoutes)) or
             (len(sampleRoutes) == 0 and
-            ((not args.noPrune) and (R[id]['route_score'] != 'High') or
+            ((not args.noPrune) and ('route_score' in R) and
+             (R[id]['route_score'] != 'High') or
              ((not args.noPruneFailed) and failedList[cnt] == 1)))):
             cnt = cnt+1
             continue
