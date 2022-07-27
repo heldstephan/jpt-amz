@@ -342,6 +342,7 @@ static void CreateNodes()
         else
             Link(Prev, N);
         N->Id = i;
+        N->Latest = IN_MAX;
     }
     Link(N, FirstNode);
 }
