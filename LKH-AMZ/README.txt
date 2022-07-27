@@ -5,12 +5,12 @@ INSTALLATION
 
 Download the software and execute the following UNIX commands:
 
-    tar xvfz LKH-AMZ-Final.tgz
-    cd LKH-AMZ-Final
+    tar xvfz LKH-AMZ.tgz
+    cd LKH-AMZ
     make
 
 Two executable files called LKH and score will now be available
-in the directory LKH-AMZ-Final.
+in the directory LKH-AMZ.
 
 The script solve_and_merge is used for finding LKH tours for instances
 in two given directories and compute the score of the merged tours.
