@@ -1,0 +1,49 @@
+#!/bin/bash
+# Usage: ./merge directory1 directory2 result_directory
+
+if [ -z "$3" ]; then
+    echo "./merge directory1 directory2 result_directory"
+    exit
+fi
+
+THREADS=16
+
+start=`date +%s`
+
+dir1=$1
+dir2=$2
+result=$3
+
+/bin/rm -fr TOURS-$result
+mkdir -p TOURS-$result
+mkdir -p $result
+
+function merge () {
+    name=$1
+    length1=$(./get_Length TOURS-$dir1/$name.tour)
+    length2=$(./get_Length TOURS-$dir2/$name.tour)
+    length2=$(echo $length2*1.01|bc)
+    length2=${length2/.*}
+    if [ $length1 -le $length2 ]; then
+        ln -fs ../$dir1/$name.ctsptw $result/$name.ctsptw
+        ln -fs ../TOURS-$dir1/$name.tour TOURS-$result/$name.tour
+    else
+        ln -fs ../$dir2/$name.ctsptw $result/$name.ctsptw
+        ln -fs ../TOURS-$dir2/$name.tour TOURS-$result/$name.tour
+    fi
+}
+
+for FILE in `ls $dir1/*.ctsptw` ;
+do
+    name=$(echo "$FILE" | cut -f 2 -d '/' | cut -f 1 -d '.')
+    merge $name &
+    until [ $(jobs | grep Running | wc -l) -lt $THREADS ]; do
+        sleep 0.01
+    done
+done
+wait
+
+./score $result
+
+end=`date +%s`
+echo "Runtime:" $((end-start)) "seconds"

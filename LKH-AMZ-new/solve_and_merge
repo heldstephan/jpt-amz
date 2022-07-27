@@ -1,0 +1,23 @@
+#!/bin/bash
+# Usage: ./solve_and_merge directory1 directory2 result_directory
+
+if [ -z "$3" ]; then
+    echo "./solve_and_merge directory1 directory2 result_directory"
+    exit
+fi
+
+start=`date +%s`
+
+dir1=$1
+dir2=$2
+result=$3
+
+time1=1
+time2=1
+
+./solve $dir1 $time1
+./solve $dir2 $time2
+./merge $dir1 $dir2 $result
+
+end=`date +%s`
+echo "Total runtime:" $((end-start)) "seconds"
