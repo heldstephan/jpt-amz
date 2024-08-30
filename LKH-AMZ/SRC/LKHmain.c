@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         RecordBetterTour();
         RecordBestTour();
         CurrentPenalty = LLONG_MAX;
-        BestPenalty = CurrentPenalty = Penalty();
+        BestPenalty = PenaltyMultiplier * Penalty() + BestCost;
         WriteTour(TourFileName, BestTour, BestCost);
         Runs = 0;
     }
@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
             break;
         }
         Cost = FindTour();    /* using the Lin-Kernighan heuristic */
+        if (MergingUsed && Run > 1 && Cost != BestCost - GTSPSets * MM)
+            Cost = MergeTourWithBestTour();
         Cost -= GTSPSets * MM;
         CurrentPenalty = PenaltyMultiplier * CurrentPenalty + Cost;
         if (CurrentPenalty < BestPenalty ||

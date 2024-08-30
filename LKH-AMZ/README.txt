@@ -5,11 +5,11 @@ INSTALLATION
 
 Download the software and execute the following UNIX commands:
 
-    tar xvfz LKH-AMZ.tgz
-    cd LKH-AMZ
+    tar xvfz LKH-AMZ-new.tgz
+    cd LKH-AMZ-new
     make
 
-Two executable files called LKH and score will now be available
+Three executable files called LKH, score and get_Length will now be available
 in the directory LKH-AMZ.
 
 The script solve_and_merge is used for finding LKH tours for instances
@@ -36,7 +36,7 @@ Copyright (c) 2021 Keld Helsgaun
 Permission is hereby granted, free of charge, 
 to any person obtaining a copy of this software and 
 associated documentation files (the "Software"), to 
-deal in the Software without restriction, including 
+deal in the Software without restriction, incuding 
 without limitation the rights to use, copy, modify, 
 merge, publish, distribute, sublicense, and/or sell 
 copies of the Software, and to permit persons to whom 

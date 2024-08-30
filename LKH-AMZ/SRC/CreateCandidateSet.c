@@ -61,7 +61,6 @@ void CreateCandidateSet()
     MaxAlpha = (long long) fabs(Excess * Cost);
     GenerateCandidates(MaxCandidates, MaxAlpha, CandidateSetSymmetric);
 
-    ResetCandidateSet();
     if (MaxTrials > 0) {
         Na = FirstNode;
         do {

@@ -20,15 +20,10 @@
  *	
  */
 
-#define PRED(a) (Reversed == (a)->Parent->Reversed ? (a)->Pred : (a)->Suc)
-#define SUC(a) (Reversed == (a)->Parent->Reversed ? (a)->Suc : (a)->Pred)
-#define BETWEEN(a, b, c) Between_SL(a, b, c)
-#define FLIP(a, b, c, d) Flip_SL(a, b, c)
-
-#define PREDD(a) ((a)->Parent ? PRED(a) :\
-                 Reversed ? (a)->Suc : (a)->Pred)
-#define SUCC(a) ((a)->Parent ? SUC(a) :\
-                 Reversed ? (a)->Pred : (a)->Suc)
+#define PRED(a) (Reversed ? (a)->Suc : (a)->Pred)
+#define SUC(a) (Reversed ? (a)->Pred : (a)->Suc)
+#define BETWEEN(a, b, c) Between(a, b, c)
+#define FLIP(a, b, c, d) Flip(a, b, c)
 
 #define Swap1(a1,a2,a3)\
         FLIP(a1,a2,a3,0)

@@ -29,9 +29,10 @@ long long FindTour()
     while ((t = t->Suc) != FirstNode);
     BetterCost = LLONG_MAX;
     BetterPenalty = CurrentPenalty = LLONG_MAX;
-    if (MaxTrials > 0)
-        HashInitialize(HTable);
-    else {
+    if (MaxTrials > 0) {
+        if (HashingUsed)
+            HashInitialize(HTable);
+    } else {
         Trial = 1;
         ChooseInitialTour();
         CurrentPenalty = LLONG_MAX;
@@ -63,8 +64,10 @@ long long FindTour()
             RecordBetterTour();
             AdjustCandidateSet();
             PrepareKicking();
-            HashInitialize(HTable);
-            HashInsert(HTable, Hash, Cost);
+            if (HashingUsed) {
+                HashInitialize(HTable);
+                HashInsert(HTable, Hash, Cost);
+            }
         } else if (TraceLevel >= 2) {
             printff("  %d: ", Trial);
             StatusReport(Cost, EntryTime, "");
@@ -76,14 +79,17 @@ long long FindTour()
             t = t->BestSuc = t->Suc;
         while (t != FirstNode);
     }
-    Hash = 0;
-    do {
+    do
         (t->Suc = t->BestSuc)->Pred = t;
-        Hash ^= Rand[t->Id] * Rand[t->Suc->Id];
-    } while ((t = t->BestSuc) != FirstNode);
+    while ((t = t->BestSuc) != FirstNode);
+    if (HashingUsed) {
+        Hash = 0;
+        do
+            Hash ^= Rand[t->Id] * Rand[t->Suc->Id];
+        while ((t = t->BestSuc) != FirstNode);
+    }
     if (Trial > MaxTrials)
         Trial = MaxTrials;
-    ResetCandidateSet();
     CurrentPenalty = BetterPenalty;
     return BetterCost;
 }

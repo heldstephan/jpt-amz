@@ -43,8 +43,6 @@ enum ConstraintType { AND, OR };
 typedef struct Node Node;
 typedef struct Candidate Candidate;
 typedef struct Cluster Cluster;
-typedef struct Segment Segment;
-typedef struct SSegment SSegment;
 typedef struct SuperCluster SuperCluster;
 typedef struct SuperSuperCluster SuperSuperCluster;
 typedef struct SwapRecord SwapRecord;
@@ -68,15 +66,13 @@ struct Node {
     int Cost;   /* "Best" cost of an edge emanating from the node */
     int NextCost;  /* During the ascent, the next best cost of an edge
                       emanating from the node */
-    int PredCost,  /* The costs of the neighbor edges on the current tour */ 
-        SucCost; 
     int SavedCost;
     int Pi;     /* Pi-value of the node */
     int BestPi; /* Currently best pi-value found during the ascent */
     int Beta;   /* Beta-value (used for computing alpha-values) */
     int Sons;   /* Number of sons in the minimum spanning tree */
     int *C;     /* A row in the cost matrix */
-    int Seq;           /* Sequence number in the current tour */
+    int Seq;    /* Sequence number in the current tour */
     int Degree; /* The degree of the node */
     int KickRank; /* Ranks used in for KSwapKick */
     int KickV;    /* V used in KSwapKick */
@@ -99,17 +95,11 @@ struct Node {
          *FixedTo2Saved;
     Node *SucSaved;             /* Saved pointer to successor node */
     Candidate *CandidateSet;    /* Candidate array */
-    Segment *Parent;   /* Parent segment of a node when the two-level
-                          tree representation is used */
     double ServiceTime;
     int DepotId;     /* Equal to Id if the node is a depot; otherwize 0 */
     double Earliest, Latest;
     Cluster *MyCluster;
     Node *NextInCluster;
-    char OldPredExcluded, OldSucExcluded;  /* Booleans used for indicating 
-                                              whether one (or both) of the 
-                                              adjoining nodes on the old tour 
-                                              has been excluded */
 };
 
 /* The Candidate structure is used to represent candidate edges */
@@ -118,28 +108,6 @@ struct Candidate {
     Node *To;   /* The end node of the edge */
     int Cost;   /* Cost (distance) of the edge */
     int Alpha;  /* Its alpha-value */
-};
-
-/* The Segment structure is used to represent the segments in the two-level 
-   representation of tours */
-
-struct Segment {
-    char Reversed;       /* Reversal bit */
-    Node *First, *Last;  /* First and last node in the segment */
-    Segment *Pred, *Suc; /* Predecessor and successor in the two-way 
-                            list of segments */
-    int Rank;   /* Ordinal number of the segment in the list */
-    int Size;   /* Number of nodes in the segment */
-    SSegment *Parent;    /* The parent super segment */
-};
-
-struct SSegment {
-    char Reversed;         /* Reversal bit */
-    Segment *First, *Last; /* The first and last node in the segment */
-    SSegment *Pred, *Suc;  /* The predecessor and successor in the
-                              two-way list of super segments */
-    int Rank;   /* The ordinal number of the segment in the list */
-    int Size;   /* The number of nodes in the segment */
 };
 
 struct SuperSuperCluster {
@@ -174,120 +142,114 @@ struct SwapRecord {
     Node *t1, *t2, *t3, *t4;    /* The 4 nodes involved in a 2-opt move */
 };
 
-int AscentCandidates;   /* Number of candidate edges to be associated
-                           with each node during the ascent */
-long long BestCost;      /* Cost of the tour in BestTour */
-long long BestPenalty;   /* Penalty of the tour in BestTour */
-int *BestTour;          /* Table containing best tour found */
-long long BetterCost;    /* Cost of the tour stored in BetterTour */
-long long BetterPenalty; /* Penalty of the tour stored in BetterTour */
-int *BetterTour;        /* Table containing the currently best tour 
-                           in a run */
-int CacheMask;  /* Mask for indexing the cache */
-int *CacheVal;  /* Table of cached distances */
-int *CacheSig;  /* Table of the signatures of cached 
-                   distances */
-int *CostMatrix;        /* Cost matrix */
-long long CurrentGain;
-long long CurrentPenalty;
-Node *Depot;
-int Dimension;          /* Number of nodes in the problem */
-int DimensionSaved;     /* Saved value of Dimension */
-int Dim;                /* DimensionSaved - Salesmen + 1 */
-double Excess;          /* Maximum alpha-value allowed for any 
-                           candidate edge is set to Excess times the 
-                           absolute value of the lower bound of a 
-                           solution tour */
-Node *FirstActive, *LastActive; /* First and last node in the list 
-                                   of "active" nodes */
-Cluster *FirstCluster, *LastCluster;
-SuperCluster *FirstSuperCluster, *LastSuperCluster;
-SuperSuperCluster *FirstSuperSuperCluster, *LastSuperSuperCluster;
-Node *FirstNode;        /* First node in the list of nodes */
-Segment *FirstSegment;  /* A pointer to the first segment in the cyclic 
-                           list of segments */
-SSegment *FirstSSegment;        /* A pointer to the first super segment in
-                                   the cyclic list of segments */
-int CTSPTransform; /* Specifies whether the CTSP transform is used */
-int GTSPSets;   /* Specifies the number of clusters in a GTSP instance */
-int SuperGTSPSets;   /* Specifies the number of super clusters */
-int SuperSuperGTSPSets;   /* Specifies the number of super super clusters */
-int GroupSize;  /* Desired initial size of each segment */
-int SGroupSize; /* Desired initial size of each super segment */
-int Groups;     /* Current number of segments */
-int SGroups;    /* Current number of super segments */
-unsigned Hash;  /* Hash value corresponding to the current tour */
-Node **Heap;    /* Heap used for computing minimum spanning trees */
-HashTable *HTable;      /* Hash table used for storing tours */
-int InitialPeriod;      /* Length of the first period in the ascent */
-int Kicks;      /* Specifies the number of K-swap-kicks */
-int KickType;   /* Specifies K for a K-swap-kick */
-char *LastLine; /* Last input line */
-double LowerBound;      /* Lower bound found by the ascent */
-int M;          /* The M-value is used when solving an ATSP-
-                   instance by transforming it to a STSP-instance */
-long long MM;    /* The MM-value is used when transforming a CTSP-
-                   instance to an ATSP-instance */
-int MaxCandidates;      /* Maximum number of candidate edges to be 
-                           associated with each node */
-int MaxMatrixDimension; /* Maximum dimension for an explicit cost matrix */
-int MaxTrials;  /* Maximum number of trials in each run */
-int MoveType;   /* Specifies the sequantial move type to be used 
-                   in local search. A value K >= 2 signifies 
-                   that a k-opt moves are tried for k <= K */
-int MoveTypeSpecial; /* A special (3- or 5-opt) move is used */
-Node *NodeSet;  /* Array of all nodes */
-int Norm;       /* Measure of a 1-tree's discrepancy from a tour */
-long long PenaltyGain;
-int PenaltyMultiplier;
-int Precision;  /* Internal precision in the representation of 
-                   transformed distances */
-int PredSucCostAvailable; /* PredCost and SucCost are available */
-unsigned *Rand;           /* Table of random values */
-short Reversed; /* Boolean used to indicate whether a tour has 
-                   been reversed */
-int Run;        /* Current run number */
-int Runs;       /* Total number of runs */
-double ServiceTime; /* Service time for a CVRP instance */
-int Serial;
-unsigned Seed;  /* Initial seed for random number generation */
-double StartTime;       /* Time when execution starts */
-int Subgradient;        /* Specifies whether the Pi-values should be 
-                           determined by subgradient optimization */
-int SubproblemSize;     /* Number of nodes in a subproblem */
-SwapRecord *SwapStack;  /* Stack of SwapRecords */
-int Swaps;      /* Number of swaps made during a tentative move */
-double TimeLimit;    /* The time limit in seconds */
-int TraceLevel; /* Specifies the level of detail of the output 
-                   given during the solution process. 
-                   The value 0 signifies a minimum amount of 
-                   output. The higher the value is the more 
-                   information is given */
-int Trial;      /* Ordinal number of the current trial */
+extern int AscentCandidates;   /* Number of candidate edges to be associated
+                                  with each node during the ascent */
+extern long long BestCost;      /* Cost of the tour in BestTour */
+extern long long BestPenalty;   /* Penalty of the tour in BestTour */
+extern int *BestTour;           /* Table containing best tour found */
+extern long long BetterCost;    /* Cost of the tour stored in BetterTour */
+extern long long BetterPenalty; /* Penalty of the tour stored in BetterTour */
+extern int *BetterTour;         /* Table containing the currently best tour 
+                                   in a run */
+extern int *CostMatrix;         /* Cost matrix */
+extern long long CurrentGain;
+extern long long CurrentPenalty;
+extern Node *Depot;
+extern int Dimension;          /* Number of nodes in the problem */
+extern int DimensionSaved;     /* Saved value of Dimension */
+extern int Dim;                /* DimensionSaved - Salesmen + 1 */
+extern double Excess;          /* Maximum alpha-value allowed for any 
+                                  candidate edge is set to Excess times the 
+                                  absolute value of the lower bound of a 
+                                  solution tour */
+extern Node *FirstActive, *LastActive; /* First and last node in the list 
+                                          of "active" nodes */
+extern Cluster *FirstCluster, *LastCluster;
+extern SuperCluster *FirstSuperCluster, *LastSuperCluster;
+extern SuperSuperCluster *FirstSuperSuperCluster, *LastSuperSuperCluster;
+extern Node *FirstNode;        /* First node in the list of nodes */
+extern int CTSPTransform; /* Specifies whether the CTSP transform is used */
+extern int GTSPSets;   /* Specifies the number of clusters in a GTSP instance */
+extern int SuperGTSPSets;   /* Specifies the number of super clusters */
+extern int SuperSuperGTSPSets; /* Specifies the number of
+                                  super super clusters */
+extern int GroupSize;  /* Desired initial size of each segment */
+extern int SGroupSize; /* Desired initial size of each super segment */
+extern int Groups;     /* Current number of segments */
+extern int SGroups;    /* Current number of super segments */
+extern unsigned Hash;  /* Hash value corresponding to the current tour */
+extern Node **Heap;    /* Heap used for computing minimum spanning trees */
+extern HashTable *HTable;      /* Hash table used for storing tours */
+extern int HashingUsed;        /* Specifies whether hashing is used */
+extern int InitialPeriod;      /* Length of the first period in the ascent */
+extern int KickType;   /* Specifies K for a K-swap-kick */
+extern char *LastLine; /* Last input line */
+extern double LowerBound;      /* Lower bound found by the ascent */
+extern int M;          /* The M-value is used when solving an ATSP-
+                           instance by transforming it to a STSP-instance */
+extern long long MM;    /* The MM-value is used when transforming a CTSP-
+                           instance to an ATSP-instance */
+extern int MaxCandidates;      /* Maximum number of candidate edges to be 
+                                  associated with each node */
+extern int MaxMatrixDimension; /* Maximum dimension for an explicit
+                                  cost matrix */
+extern int MaxTrials;  /* Maximum number of trials in each run */
+extern int MergingUsed;        /* Specifies whether merging is used */
+extern int MoveType;   /* Specifies the sequantial move type to be used 
+                          in local search. A value K >= 2 signifies 
+                          that a k-opt moves are tried for k <= K */
+extern int MoveTypeSpecial; /* A special (3- or 5-opt) move is used */
+extern Node *NodeSet;  /* Array of all nodes */
+extern int Norm;       /* Measure of a 1-tree's discrepancy from a tour */
+extern long long PenaltyGain;
+extern int PenaltyMultiplier;
+extern int PenaltyUsed;
+extern int Precision;  /* Internal precision in the representation of 
+                          transformed distances */
+extern unsigned *Rand; /* Table of random values */
+extern short Reversed; /* Boolean used to indicate whether a tour has 
+                          been reversed */
+extern int Run;        /* Current run number */
+extern int Runs;       /* Total number of runs */
+extern unsigned Seed;  /* Initial seed for random number generation */
+extern double ServiceTime;     /* Service time for a CVRP instance */
+extern double StartTime;       /* Time when execution starts */
+extern int Subgradient;        /* Specifies whether the Pi-values should be 
+                                  determined by subgradient optimization */
+extern SwapRecord *SwapStack;  /* Stack of SwapRecords */
+extern int Swaps;      /* Number of swaps made during a tentative move */
+extern double TimeLimit;    /* The time limit in seconds */
+extern int TimeWindowsUsed;  /* Specifies whether time window are used */
+extern int TraceLevel; /* Specifies the level of detail of the output 
+                          given during the solution process. 
+                          The value 0 signifies a minimum amount of 
+                          output. The higher the value is the more 
+                          information is given */
+extern int Trial;      /* Ordinal number of the current trial */
 
-ZoneConstraint *FirstZoneNeighborConstraint;
-ZoneConstraint *FirstZonePathConstraint;
-ZoneConstraint *FirstZonePrecedenceConstraint;
+extern ZoneConstraint *FirstZoneNeighborConstraint;
+extern ZoneConstraint *FirstZonePathConstraint;
+extern ZoneConstraint *FirstZonePrecedenceConstraint;
 
-ZoneConstraint *FirstSuperZoneNeighborConstraint;
-ZoneConstraint *FirstSuperZonePathConstraint;
-ZoneConstraint *FirstSuperZonePrecedenceConstraint;
+extern ZoneConstraint *FirstSuperZoneNeighborConstraint;
+extern ZoneConstraint *FirstSuperZonePathConstraint;
+extern ZoneConstraint *FirstSuperZonePrecedenceConstraint;
 
-ZoneConstraint *FirstSuperSuperZoneNeighborConstraint;
-ZoneConstraint *FirstSuperSuperZonePathConstraint;
-ZoneConstraint *FirstSuperSuperZonePrecedenceConstraint;
+extern ZoneConstraint *FirstSuperSuperZoneNeighborConstraint;
+extern ZoneConstraint *FirstSuperSuperZonePathConstraint;
+extern ZoneConstraint *FirstSuperSuperZonePrecedenceConstraint;
 
 /* The following variables are read by the functions ReadParameters and 
    ReadProblem: */
 
-char *ParameterFileName, *ProblemFileName, *InitialTourFileName,
-     *PiFileName, *TourFileName;
-char *Name, *Type, *EdgeWeightType, *EdgeWeightFormat;
-int CandidateSetSymmetric, MTSPDepot,
-    ProblemType, WeightType, WeightFormat;
+extern char *ParameterFileName, *ProblemFileName, *InitialTourFileName,
+            *TourFileName;
+extern char *Name, *Type, *EdgeWeightType, *EdgeWeightFormat;
+extern int CandidateSetSymmetric, MTSPDepot,
+           ProblemType, WeightType, WeightFormat;
 
-FILE *ParameterFile, *ProblemFile, *InitialTourFile;
-CostFunction Distance, D, C, c, OldDistance;
+extern FILE *ParameterFile, *ProblemFile, *InitialTourFile;
+extern CostFunction Distance, D, C, c, OldDistance;
 
 /* Function prototypes: */
 
@@ -304,7 +266,6 @@ void Activate(Node * t);
 int AddCandidate(Node * From, Node * To, int Cost, int Alpha);
 void AddTourCandidates(void);
 void AdjustCandidateSet(void);
-void AllocateSegments(void);
 void AllocateStructures(void);
 long long Ascent(void);
 int Between(const Node * ta, const Node * tb, const Node * tc);
@@ -314,12 +275,10 @@ void Connect(Node * N1, int Max, int Sparse);
 void CandidateReport(void);
 void CreateCandidateSet(void);
 void eprintf(const char *fmt, ...);
-int Excludable(Node * ta, Node * tb);
-void Exclude(Node * ta, Node * tb);
 int FixedCandidates(Node * N);
 long long FindTour(void);
 void Flip(Node * t1, Node * t2, Node * t3);
-void Flip_SL(Node * t1, Node * t2, Node * t3);
+void FlipUpdate(void);
 int Forbidden(Node * Na, Node * Nb);
 char *FullName(char * Name, long long Cost);
 int fscanint(FILE *f, int *v);
@@ -332,13 +291,13 @@ int IsCommonEdge(const Node * ta, const Node * tb);
 int IsPossibleCandidate(Node * From, Node * To);
 void KSwapKick(int K);
 long long LinKernighan(void);
-void Make3OptMove(Node * t1, Node * t2, Node * t3, Node * t4, 
-                  Node * t5, Node * t6, int Case);
+long long MergeTourWithBestTour(void);
+long long MergeWithTour(void);
 long long Minimum1TreeCost(int Sparse);
 void MinimumSpanningTree(int Sparse);
 void NormalizeNodeList(void);
-void NormalizeSegmentList(void);
 long long Penalty(void);
+long long TotalTWViolation(int *num_violation);
 void PrepareKicking(void);
 void printff(const char * fmt, ...);
 void PrintParameters(void);
@@ -351,9 +310,7 @@ void ReadTour(char * FileName, FILE ** File);
 void RecordBestTour(void);
 void RecordBetterTour(void);
 Node *RemoveFirstActive(void);
-void ResetCandidateSet(void);
 void RestoreTour(void);
-int SegmentSize(Node * ta, Node * tb);
 void SpecialMove(Node * t1, Node * t2, long long * G0, long long * Gain);
 void StatusReport(long long Cost, double EntryTime, char * Suffix);
 void StoreTour(void);

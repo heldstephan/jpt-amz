@@ -17,6 +17,8 @@ void WriteTour(char *FileName, int *Tour, long long Cost)
     int i, j, n;
     char *FullFileName;
     time_t Now;
+    long long tw_viol;
+    int num_tw_viol;
 
     if (FileName == 0)
         return;
@@ -33,6 +35,8 @@ void WriteTour(char *FileName, int *Tour, long long Cost)
             "COMMENT : Cost = %lld_%lld\n", CurrentPenalty, Cost);
     fprintf(TourFile, "COMMENT : Found by LKH-AMZ [Keld Helsgaun] %s",
             ctime(&Now));
+    tw_viol =  TotalTWViolation(&num_tw_viol);
+    fprintf(TourFile, "COMMENT : TW viol.: %lld #: %d\n", tw_viol, num_tw_viol);
     fprintf(TourFile, "TYPE : TOUR\n");
     fprintf(TourFile, "DIMENSION : %d\n", DimensionSaved);
     fprintf(TourFile, "TOUR_SECTION\n");

@@ -16,6 +16,7 @@ int Improvement(long long * Gain, Node * t1, Node * SUCt1)
     if (NewPenalty <= CurrentPenalty) {
         if (NewPenalty < CurrentPenalty || CurrentGain > 0) {
             PenaltyGain = CurrentPenalty - NewPenalty;
+            FlipUpdate();
             return 1;
         }
     }

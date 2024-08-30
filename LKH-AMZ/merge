@@ -6,6 +6,8 @@ if [ -z "$3" ]; then
     exit
 fi
 
+THREADS=16
+
 start=`date +%s`
 
 dir1=$1
@@ -16,24 +18,30 @@ result=$3
 mkdir -p TOURS-$result
 mkdir -p $result
 
-for FILE in `ls $dir1/*.ctsptw` ;
-do
-    name=$(echo "$FILE" | cut -f 2 -d '/' | cut -f 1 -d '.')
+function merge () {
+    name=$1
     length1=$(./get_Length TOURS-$dir1/$name.tour)
     length2=$(./get_Length TOURS-$dir2/$name.tour)
     length2=$(echo $length2*1.01|bc)
     length2=${length2/.*}
-    echo -n $name: $length1 $length2
     if [ $length1 -le $length2 ]; then
-        echo " <"
         ln -fs ../$dir1/$name.ctsptw $result/$name.ctsptw
         ln -fs ../TOURS-$dir1/$name.tour TOURS-$result/$name.tour
     else
-        echo " >"
         ln -fs ../$dir2/$name.ctsptw $result/$name.ctsptw
         ln -fs ../TOURS-$dir2/$name.tour TOURS-$result/$name.tour
     fi
+}
+
+for FILE in `ls $dir1/*.ctsptw` ;
+do
+    name=$(echo "$FILE" | cut -f 2 -d '/' | cut -f 1 -d '.')
+    merge $name &
+    until [ $(jobs | grep Running | wc -l) -lt $THREADS ]; do
+        sleep 0.01
+    done
 done
+wait
 
 ./score $result
 

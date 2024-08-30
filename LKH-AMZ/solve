@@ -12,12 +12,13 @@ start=`date +%s`
 
 instances=$1
 if [ -z "$2" ]; then
-    time_limit=10
+    time_limit=1
 else
     time_limit=$2
 fi
 
 /bin/rm -fr TOURS-$instances
+/bin/rm -fr TMP
 mkdir -p TOURS-$instances
 mkdir -p TMP
 
@@ -29,13 +30,22 @@ do
     echo "CTSP_TRANSFORM = YES" >> $par
     echo "SEED = 1" >> $par
     echo "TIME_LIMIT = $time_limit" >> $par
+    echo "TRACE_LEVEL = 0" >> $par
     echo "TOUR_FILE = TOURS-$instances/$name.tour" >> $par
+#    echo "HASHING = NO" >> $par
+#    echo "MERGING = NO" >> $par
+#    echo "SUBGRADIENT = NO" >> $par
+#    echo "TIME_WINDOWS = YES" >> $par
     ./LKH $par &
-    until [ $(jobs | grep Running | wc -l) -lt $THREADS ]; do
+    until [ $(jobs -r | grep ./LKH | wc -l) -lt $THREADS ]; do
         sleep 0.01
     done
 done
 wait
+
+./score $instances
+
+/bin/rm -fr TMP
 
 end=`date +%s`
 echo "Runtime:" $((end-start)) "seconds"

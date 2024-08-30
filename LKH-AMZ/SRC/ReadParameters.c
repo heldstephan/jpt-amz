@@ -50,6 +50,10 @@
  * Specifies whether the Gain23 function is used.
  * Default: NO
  *
+ * HASHING = { YES | NO }
+ * Specifies whether hashing is used.
+ * Default: YES
+ *
  * INITIAL_PERIOD = <integer>
  * The length of the first period in the ascent.
  * Default: DIMENSION/2 (but at least 100)
@@ -60,18 +64,12 @@
  * strategy, WALK, is used.
  * Default: 4
  *
- * KICKS = <integer>
- * Specifies the number of times to "kick" a tour found by Lin-Kernighan.
- * Each kick is a random k-swap kick-move. However, if KICKS is zero, then
- * LKH's special kicking strategy, WALK, is used.
- * Default: 1
- *
  * MAX_CANDIDATES = <integer> [ SYMMETRIC ]
  * The maximum number of candidate edges to be associated with each node.
  * The integer may be followed by the keyword SYMMETRIC, signifying
  * that the candidate set is to be complemented such that every candidate
  * edge is associated with both its two end nodes.
- * Default: 5
+ * Default: 6
  *
  * MAX_SWAPS = <integer>
  * Specifies the maximum number of swaps (flips) allowed in any search
@@ -80,7 +78,15 @@
  *
  * MAX_TRIALS = <integer>
  * The maximum number of trials in each run.
- * Default: DIMENSION
+ * Default: 8 * DIMENSION
+ *
+ * MERGING = { YES | NO }
+ * Specifies whether merging is used.
+ * Default: YES
+ *
+ * PENALTY = { YES | NO }
+ * Specifies whether the penalty function is used.
+ * Default: YES
  *
  * PENALTY_MULTIPLIER = <integer>
  * Default: 1500
@@ -108,6 +114,10 @@
  * TIME_LIMIT = <real>
  * Specifies a time limit in seconds for each run.
  * Default: DBL_MAX
+ *
+ * TIME_WINDOWS = { YES | NO }
+ * Specifies whether time windows are used.
+ * Default: YES
  *
  * TOUR_FILE = <string>
  * Specifies the name of a file where the best tour is to be written.
@@ -147,20 +157,23 @@ void ReadParameters()
     AscentCandidates = 50;
     CandidateSetSymmetric = 0;
     Excess = -1;
+    HashingUsed = 1;
     InitialPeriod = -1;
-    Kicks = 1;
     KickType = 4;
-    MaxCandidates = 1000;
+    MaxCandidates = 6;
     MaxTrials = -1;
+    MergingUsed = 1;
     MoveType = 3;
     MoveTypeSpecial = 1;
     MTSPDepot = 1;
     PenaltyMultiplier = 1500;
+    PenaltyUsed = 1;
     Precision = 100;
     Runs = 100000;
     Seed = 1;
     Subgradient = 1;
     TimeLimit = DBL_MAX;
+    TimeWindowsUsed = 0;
     TraceLevel = 0;
 
     if (ParameterFileName) {
@@ -215,6 +228,9 @@ void ReadParameters()
                 eprintf("EXCESS: real expected");
             if (Excess < 0)
                 eprintf("EXCESS: non-negeative real expected");
+        } else if (!strcmp(Keyword, "HASHING")) {
+            if (!ReadYesOrNo(&HashingUsed))
+                eprintf("HASHING: YES or NO expected");
         } else if (!strcmp(Keyword, "INITIAL_PERIOD")) {
             if (!(Token = strtok(0, Delimiters)) ||
                 !sscanf(Token, "%d", &InitialPeriod))
@@ -227,12 +243,6 @@ void ReadParameters()
                 eprintf("KICK_TYPE: integer expected");
             if (KickType != 0 && KickType < 4)
                 eprintf("KICK_TYPE: integer >= 4 expected");
-        } else if (!strcmp(Keyword, "KICKS")) {
-            if (!(Token = strtok(0, Delimiters)) ||
-                !sscanf(Token, "%d", &Kicks))
-                eprintf("KICKS: integer expected");
-            if (Kicks < 0)
-                eprintf("KICKS: non-negative integer expected");
         } else if (!strcmp(Keyword, "MAX_CANDIDATES")) {
             if (!(Token = strtok(0, Delimiters)) ||
                 !sscanf(Token, "%d", &MaxCandidates))
@@ -254,11 +264,17 @@ void ReadParameters()
                 eprintf("MAX_TRIALS: integer expected");
             if (MaxTrials < 0)
                 eprintf("MAX_TRIALS: non-negative integer expected");
+        } else if (!strcmp(Keyword, "MERGING")) {
+            if (!ReadYesOrNo(&MergingUsed))
+                eprintf("MERGING: YES or NO expected");
         } else if (!strcmp(Keyword, "MOVE_TYPE")) {
              if (!(Token = strtok(0, Delimiters)) ||
                  !sscanf(Token, "%d", &MoveType))
                  eprintf("MOVE_TYPE: integer expected");
-         } else if (!strcmp(Keyword, "PENALTY_MULTIPLIER")) {
+        } else if (!strcmp(Keyword, "PENALTY")) {
+            if (!ReadYesOrNo(&PenaltyUsed))
+                eprintf("PENALTY: YES or NO expected");
+        } else if (!strcmp(Keyword, "PENALTY_MULTIPLIER")) {
             if (!(Token = strtok(0, Delimiters)) ||
                 !sscanf(Token, "%d", &PenaltyMultiplier))
                 eprintf("PENALTY_MULTIPLIER: integer expected");
@@ -288,6 +304,9 @@ void ReadParameters()
                 eprintf("TIME_LIMIT: real expected");
             if (TimeLimit < 0)
                 eprintf("TIME_LIMIT: >= 0 expected");
+        } else if (!strcmp(Keyword, "TIME_WINDOWS")) {
+            if (!ReadYesOrNo(&TimeWindowsUsed))
+                eprintf("TIME_WINDOWS: YES or NO expected");
         } else if (!strcmp(Keyword, "TOUR_FILE")) {
             if (!(TourFileName = GetFileName(0)))
                 eprintf("TOUR_FILE: string expected");

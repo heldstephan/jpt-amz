@@ -27,7 +27,6 @@ void StoreTour()
             Activate(t);
             t->OldPred = t->Pred;
             t->OldSuc = t->Suc;
-            t->OldPredExcluded = t->OldSucExcluded = 0;
         }
     }
 }

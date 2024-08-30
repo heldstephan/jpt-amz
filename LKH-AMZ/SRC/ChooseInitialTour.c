@@ -11,7 +11,8 @@
  *
  * NextN is chosen as follows:
  *
- *  (A) If possible, choose NextN such that (N,NextN) is a fixed edge.
+ *  (A) If possible, choose NextN such that (N,NextN) is a fixed edge, or
+ *      is common to two or more tours to be merged.
  *  (B) Otherwise, if possible, choose NextN so that (N,NextN) is a
  *      candidate edge, the alpha-value of (N,NextN) is zero, and (N,NextN)
  *      belongs to the current best or next best tour.
@@ -32,11 +33,10 @@ void ChooseInitialTour()
     Candidate *NN;
     int Alternatives, Count, i;
     
-    if (KickType > 0 && Kicks > 0 && Trial > 1) {
+    if (KickType > 0 && Trial > 1) {
         for (Last = FirstNode; (N = Last->BestSuc) != FirstNode; Last = N)
             Follow(N, Last);
-        for (i = 1; i <= Kicks; i++)
-            KSwapKick(KickType);
+        KSwapKick(KickType);
         return;
     }
     

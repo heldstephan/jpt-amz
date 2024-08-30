@@ -18,7 +18,7 @@ int AddCandidate(Node * From, Node * To, int Cost, int Alpha)
 
     if (From->CandidateSet == 0)
         From->CandidateSet = (Candidate *) calloc(3, sizeof(Candidate));
-    if (From == To || !IsPossibleCandidate(From, To))
+    if (From == To)
         return 0;
     Count = 0;
     for (NFrom = From->CandidateSet; NFrom->To && NFrom->To != To; NFrom++)

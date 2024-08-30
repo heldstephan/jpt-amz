@@ -19,13 +19,14 @@ void PrintParameters()
     else
         printff("# INITIAL_PERIOD =\n");
     printff("KICK_TYPE = %d\n", KickType);
-    printff("KICKS = %d\n", Kicks);
     printff("MAX_CANDIDATES = %d %s\n",
             MaxCandidates, CandidateSetSymmetric ? "SYMMETRIC" : "");
     if (MaxTrials >= 0)
         printff("MAX_TRIALS = %d\n", MaxTrials);
     else
         printff("# MAX_TRIALS =\n");
+    printff("MERGING = %s\n", MergingUsed ? "YES" : "NO");
+    printff("PENALTY = %s\n", PenaltyUsed ? "YES" : "NO");
     printff("PENALTY_MULTIPLIER = %d\n", PenaltyMultiplier);
     printff("PRECISION = %d\n", Precision);
     printff("%sPROBLEM_FILE = %s\n",

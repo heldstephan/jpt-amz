@@ -17,5 +17,4 @@ void SymmetrizeCandidateSet()
             AddCandidate(To, From, NFrom->Cost, NFrom->Alpha);
     }
     while ((From = From->Suc) != FirstNode);
-    ResetCandidateSet();
 }

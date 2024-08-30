@@ -224,7 +224,6 @@ int main(int ac, char **av)
         strcat(A_file_name, ".tour");
         if (access(A_file_name, F_OK))
             continue;
-        strcpy(B_file_name, "");
         strcpy(B_file_name, "TOURS-");
         strcat(B_file_name, directory);
         strcat(B_file_name, "/");
@@ -245,9 +244,9 @@ int main(int ac, char **av)
         free(file_names[i]);
         count++;
     }
-    printf("Tours: %d\n", count);
+//    printf("Tours: %d\n", count);
     if (count > 0)
-        printf("Score: %0.10f\n", score_sum / count);
+        printf("Score %s: %0.5f\n", directory, score_sum / count);
     else
         printf("No score\n");
 }

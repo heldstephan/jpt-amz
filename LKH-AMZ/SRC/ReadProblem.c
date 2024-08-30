@@ -29,7 +29,7 @@
  * Identifies the data file.
  *
  * TYPE : <string>
- * Specifies the type of data. The only ossible type is
+ * Specifies the type of data. The only possible type is
  * TSPTW        Data for a TSP instance with time windows
  *
  * COMMENT : <string>
@@ -38,7 +38,6 @@
  *
  * DIMENSION : < integer>
  * The number of nodes.
- *
  *
  * EDGE_WEIGHT_TYPE : <string>
  * Specifies how the edge weights (or distances) are given. The only value is:
@@ -55,6 +54,22 @@
  *
  * SUPER_GTSP_SETS : <integer>
  * Specifies the number of super clusters in this instance.
+ *
+ * SERVICE_TIME_SECTION :
+ * The service times of all nodes of a CVRP are given in the form (per line)
+ *
+ *    <integer> <real>
+ *
+ * The integer specifies a node number, the real its service time.
+ * The depot node must also occur in this section. Its service time is 0.
+ *
+ * TIME_WINDOW_SECTION :
+ * Time windows are given in this section. Each line is of the form
+ *
+ *      <integer> <real> <realr>
+ *
+ * The first integer specifies a node number. The two reals specify
+ * earliest and latest arrival time for the node, respectively.
  *
  * EOF
  * Terminates input data. The entry is optional.
@@ -90,14 +105,6 @@
  * from 1 to M), and v1 v2 ... vk(m) are vertices comprising cluster m
  * (vertices are numbered from 1 to N).
  *
- * SERVICE_TIME_SECTION :
- * The service times of all nodes of a CVRP are given in the form (per line)
- *
- *    <integer> <real>
- *
- * The integer specifies a node number, the real its service time.
- * The depot node must also occur in this section. Its service time is 0.
- *
  * SUPER_GTSP_SET_SECTION :
  * This section defines which clustters belong to which super clusters.
  * This section contains exactly M entries, where M is the number of 
@@ -107,14 +114,6 @@
  * (clusters are numbered from 1 to M), and v1 v2 ... vk(m) are the 
  * clusters comprising subser cluster m (Clusters are numbered from 1 to 
  * GTSP_SETS).
- *
- * TIME_WINDOW_SECTION :
- * Time windows are given in this section. Each line is of the form
- *
- *      <integer> <real> <realr>
- *
- * The first integer specifies a node number. The two reals specify
- * earliest and latest arrival time for the node, respectively.
  */
 
 static const char Delimiters[] = " :=\n\t\r\f\v\xef\xbb\xbf";
@@ -252,7 +251,7 @@ void ReadProblem()
     if (Excess < 0)
         Excess = 1.0 / DimensionSaved;
     if (MaxTrials == -1)
-        MaxTrials = Dimension;
+        MaxTrials = 8 * DimensionSaved;
     HeapMake(Dimension);
     Depot = &NodeSet[MTSPDepot];
     Depot->DepotId = 1;
@@ -262,11 +261,6 @@ void ReadProblem()
         NodeSet[Depot->Id + DimensionSaved].DepotId = 1;
         for (i = Dim + 1; i <= DimensionSaved; i++)
             NodeSet[i + DimensionSaved].DepotId = i - Dim + 1;
-    }
-    if (ServiceTime != 0) {
-        for (i = 1; i <= Dim; i++)
-            NodeSet[i].ServiceTime = ServiceTime;
-        Depot->ServiceTime = 0;
     }
     if (CostMatrix == 0 && Dimension <= MaxMatrixDimension &&
         Distance != 0 && Distance != Distance_EXPLICIT &&
@@ -287,24 +281,6 @@ void ReadProblem()
         while ((Ni = Ni->Suc) != FirstNode);
         c = 0;
         WeightType = EXPLICIT;
-    }
-    if (ProblemType == TSPTW) {
-        M = INT_MAX / 2 / Precision;
-        for (i = 1; i <= Dim; i++) {
-            Node *Ni = &NodeSet[i];
-            for (j = 1; j <= Dim; j++) {
-                Node *Nj = &NodeSet[j];
-                if (Ni != Nj &&
-                    Ni->Earliest + Ni->ServiceTime + Ni->C[j] > Nj->Latest)
-                    Ni->C[j] = M;
-            }
-        }
-        if (ProblemType == TSPTW) {
-            for (i = 1; i <= Dim; i++)
-                for (j = 1; j <= Dim; j++)
-                    if (j != i)
-                        NodeSet[i].C[j] += NodeSet[i].ServiceTime;
-        }
     }
     C = WeightType == EXPLICIT ? C_EXPLICIT : C_FUNCTION;
     D = WeightType == EXPLICIT ? D_EXPLICIT : D_FUNCTION;
@@ -366,7 +342,6 @@ static void CreateNodes()
         else
             Link(Prev, N);
         N->Id = i;
-        N->Earliest = 0;
         N->Latest = INT_MAX;
     }
     Link(N, FirstNode);
@@ -847,6 +822,33 @@ static void Read_SUPER_SUPER_ZONE_PRECEDENCE_SECTION()
                       "SUPER_SUPER_ZONE_PRECEDENCE_SECTION");
 }
 
+static void Read_SERVICE_TIME()
+{
+    char *Token = strtok(0, Delimiters);
+
+    if (!Token || !sscanf(Token, "%lf", &ServiceTime))
+        eprintf("SERVICE_TIME: Real expected");
+    if (ServiceTime < 0)
+        eprintf("SERVICE_TIME: < 0");
+}
+
+static void Read_SERVICE_TIME_SECTION()
+{
+    int Id, i;
+    Node *N;
+
+    for (i = 1; i <= Dim; i++) {
+        fscanint(ProblemFile, &Id);
+        if (Id <= 0 || Id > Dim)
+            eprintf("SERVICE_TIME_SECTION: Node number out of range: %d",
+                    Id);
+        N = &NodeSet[Id];
+        if (!fscanf(ProblemFile, "%lf", &N->ServiceTime))
+            eprintf("SERVICE_TIME_SECTION: "
+                    "Missing service time for node %d", Id);
+    }
+}
+
 static void Read_TIME_WINDOW_SECTION()
 {
     int Id, i;
@@ -869,6 +871,7 @@ static void Read_TIME_WINDOW_SECTION()
             eprintf("TIME_WINDOW_SECTION: Missing earliest time");
         if (!fscanf(ProblemFile, "%lf", &N->Latest))
             eprintf("TIME_WINDOW_SECTION: Missing latest time");
+        if (N->Latest == 1000000) N->Latest = INT_MAX;
         if (N->Earliest > N->Latest)
             eprintf("TIME_WINDOW_SECTION: Earliest > Latest for node %d",
                     N->Id);
@@ -895,33 +898,6 @@ static void Read_TYPE()
         ProblemType = TSPTW;
     else
         eprintf("Unknown TYPE: %s", Type);
-}
-
-static void Read_SERVICE_TIME()
-{
-    char *Token = strtok(0, Delimiters);
-
-    if (!Token || !sscanf(Token, "%lf", &ServiceTime))
-        eprintf("SERVICE_TIME: Real expected");
-    if (ServiceTime < 0)
-        eprintf("SERVICE_TIME: < 0");
-}
-
-static void Read_SERVICE_TIME_SECTION()
-{
-    int Id, i;
-    Node *N;
-
-    for (i = 1; i <= Dim; i++) {
-        fscanint(ProblemFile, &Id);
-        if (Id <= 0 || Id > Dim)
-            eprintf("SERVICE_TIME_SECTION: Node number out of range: %d",
-                    Id);
-        N = &NodeSet[Id];
-        if (!fscanf(ProblemFile, "%lf", &N->ServiceTime))
-            eprintf("SERVICE_TIME_SECTION: "
-                    "Missing service time for node %d", Id);
-    }
 }
 
 /*
@@ -982,8 +958,6 @@ void ReadTour(char *FileName, FILE ** File)
                     ("[%s] (DIMENSION): does not match problem dimension",
                      FileName);
             }
-        } else if (!strcmp(Keyword, "SERVICE_TIME_SECTION")) {
-            Read_SERVICE_TIME_SECTION();
         } else if (!strcmp(Keyword, "EOF"))
             break;
         else
