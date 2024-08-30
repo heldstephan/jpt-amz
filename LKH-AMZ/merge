@@ -43,7 +43,17 @@ do
 done
 wait
 
-./score $result
+
+
+if [ -d "ACTUAL_TOURS" ]
+then
+    ./score $result
+else
+    echo "The optional fast internal JPT scoring is disabled  (as under contest conditions), because the directory ACTUAL_TOURS does not exist."
+    echo "It should contain the actual driven routes in TSPLIB format. You can create it with src/scripts/route2tour.py."
+    echo "E.g. being in the  model_apply_outputs directory, call"
+    echo "\"mkdir ACTUAL_TOURS;  ../../src/scripts/route2tour.py --r_file ../model_apply_inputs/new_route_data.json --s_file ../model_score_inputs/new_actual_sequences.json --out_dir ACTUAL_TOURS/\""
+fi
 
 end=`date +%s`
 echo "Runtime:" $((end-start)) "seconds"
