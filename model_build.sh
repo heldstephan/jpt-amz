@@ -15,7 +15,7 @@ cd -
 
 #Copy compiled binaries to model_build_outputs/bin
 mkdir ${DATA_DIR}/model_build_outputs/bin
-cp  ${BASE_DIR}/LKH-AMZ/get_Cost ${BASE_DIR}/LKH-AMZ/score  ${BASE_DIR}/LKH-AMZ/merge ${BASE_DIR}/LKH-AMZ/solve ${BASE_DIR}/LKH-AMZ/LKH ${DATA_DIR}/model_build_outputs/bin
+cp  ${BASE_DIR}/LKH-AMZ/get_Length ${BASE_DIR}/LKH-AMZ/score  ${BASE_DIR}/LKH-AMZ/merge ${BASE_DIR}/LKH-AMZ/solve ${BASE_DIR}/LKH-AMZ/LKH ${DATA_DIR}/model_build_outputs/bin
 
 
 date
